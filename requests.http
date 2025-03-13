@@ -36,7 +36,7 @@ Content-Type: application/json
 @firstName = Andrei
 @lastName = Popescu
 @mail = andreimail1@gmail.com 
-@phoneNumber = 0723521006
+@phoneNumber = 0723521007
 @password = parolamea123
 POST http://localhost:8081/users
 Content-Type: application/json
