@@ -24,6 +24,8 @@ public class User {
     private String phoneNumber;
     private String passwordHash;
     private Instant createdAt;
+    private int reviewsNumber;
+    private int ratingsSum;
     private Double avgRating;
     private List<Role> roles;
 
@@ -113,6 +115,22 @@ public class User {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setReviewsNumber(int reviewsNumber) {
+        this.reviewsNumber = reviewsNumber;
+    }
+
+    public int getReviewsNumber() {
+        return reviewsNumber;
+    }
+
+    public void setRatingsSum(int ratingsSum) {
+        this.ratingsSum = ratingsSum;
+    }
+
+    public int getRatingsSum() {
+        return ratingsSum;
     }
 
     public List<Role> getRoles() {

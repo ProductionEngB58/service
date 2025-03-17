@@ -80,14 +80,14 @@ POST http://localhost:8081/rides
 Content-Type: application/json
 
 {
-    "driverId": "67d767dca086f159e0e3ad65",
+    "driverId": "67d02c7ce08f3e1e5c96ef95",
     "startLocation": "Bucharest",
     "endLocation": "Cluj-Napoca",
-    "departureTime": "2025-03-17T14:51:00.000Z",
-    "arrivalTime": "2025-03-18T14:52:00.000Z",
+    "departureTime": "2025-03-18T12:52:00.000Z",
+    "arrivalTime": "2025-03-18T13:51:00.000Z",
     "seatPrice": 50,
     "seatsAvailable": 3,
-    "carLicensePlate": "B123MMM"
+    "carLicensePlate": "B123XYZ"
 }
 
 ### Get all greetings
@@ -149,7 +149,7 @@ Content-Type: application/json
 {
     "reviewerId": "67d8357ad365ce0d5a699422",
     "reviewedId": "67d767dca086f159e0e3ad65",
-    "rideId": "67d76935a086f159e0e3ad69",
+    "rideId": "67d60988a42dae58c46903e8",
     "rating": 5,
     "comment": "good driver"
 }

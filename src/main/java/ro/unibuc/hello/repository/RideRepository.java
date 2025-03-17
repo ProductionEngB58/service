@@ -12,11 +12,20 @@ import ro.unibuc.hello.model.Ride;
 
 public interface RideRepository extends MongoRepository<Ride, String> {
 
-    @Query("{ 'driverId': ?0, " +
-       "'departureTime': { $lt: ?2 }, " + // Departure time is before the new ride's arrival time
-       "'arrivalTime': { $gt: ?1 } }")   // Arrival time is after the new ride's departure time
-    Optional<Ride> findByDriverIdAndTimeOverlap(String driverId, Instant departureTime, Instant arrivalTime);
+    @Query("{ 'id': ?0, " +
+       "$or: [ " +
+       "{ 'departureTime': { $lte: ?1 }, 'arrivalTime': { $gte: ?1 } }, " +
+       "{ 'departureTime': { $lte: ?2 }, 'arrivalTime': { $gte: ?2 } } " +
+       "] }")
+    List<Ride> findByIdAndTimeOverlap(String id, Instant departureTime, Instant arrivalTime);
 
-    @Query("{ 'departureTime': { $gte: ?0, $lt: ?1 } }") // Corrected field name to 'departureTime'
+    @Query("{ 'driverId': ?0, " +
+       "$or: [ " +
+       "{ 'departureTime': { $lte: ?1 }, 'arrivalTime': { $gte: ?1 } }, " +
+       "{ 'departureTime': { $lte: ?2 }, 'arrivalTime': { $gte: ?2 } } " +
+       "] }")
+    List<Ride> findByDriverIdAndTimeOverlap(String driverId, Instant departureTime, Instant arrivalTime);
+
+    @Query("{ 'departureTime': { $gte: ?0, $lt: ?1 } }") 
     List<Ride> findAllByDepartureDate(Instant startOfDay, Instant endOfDay);
 }

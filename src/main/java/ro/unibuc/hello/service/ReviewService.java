@@ -14,6 +14,7 @@ import ro.unibuc.hello.enums.RideStatus;
 import ro.unibuc.hello.enums.RideBookingStatus;
 import ro.unibuc.hello.model.Review;
 import ro.unibuc.hello.model.RideBooking;
+import ro.unibuc.hello.model.User;
 import ro.unibuc.hello.model.Ride;
 import ro.unibuc.hello.repository.ReviewRepository;
 
@@ -65,15 +66,14 @@ public class ReviewService {
         }
 
 
-        List<RideBooking> rideBookingList = rideBookingRepository.findByRideIdAndPassengerId(
-            reviewRequestDTO.getRideId(), reviewRequestDTO.getReviewerId());
+        RideBooking rideBooking = rideBookingRepository.findByRideIdAndPassengerId(
+            reviewRequestDTO.getRideId(), reviewRequestDTO.getReviewerId()
+            ).orElse(null);
 
         // Check if reviewer is passenger
-        if (rideBookingList.isEmpty()) {
+        if (rideBooking == null) {
             throw new InvalidReviewException("Reviewer is not a passenger.");
         }
-
-        RideBooking rideBooking = rideBookingList.get(0);
 
         // Check if reviewer cancelled the ride
         if (rideBooking.getRideBookingStatus().equals(RideBookingStatus.CANCELLED)) {
@@ -109,8 +109,15 @@ public class ReviewService {
         }
 
         Review newReview = reviewRequestDTO.toEntity();
+        User reviewed = userRepository.findById(reviewRequestDTO.getReviewedId()).get();
+        
+        reviewed.setRatingsSum(reviewed.getRatingsSum() + reviewRequestDTO.getRating());
+        reviewed.setReviewsNumber(reviewed.getReviewsNumber() + 1);
+
+        reviewed.setAvgRating((double) reviewed.getRatingsSum() / reviewed.getReviewsNumber());
 
         reviewRepository.save(newReview);
+        userRepository.save(reviewed);
 
         return ReviewResponseDTO.toDTO(newReview);
 
