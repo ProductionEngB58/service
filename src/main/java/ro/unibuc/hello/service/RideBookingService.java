@@ -99,15 +99,15 @@ public class RideBookingService {
             }
         }
 
-        //check if the driver has a conflicting ride
-        boolean hasDriverConflict = !rideRepository.findByDriverIdAndTimeOverlap(
-            ride.getDriverId(),
-            ride.getDepartureTime(),
-            ride.getArrivalTime()).isEmpty();
+        // //check if the driver has a conflicting ride
+        // boolean hasDriverConflict = !rideRepository.findByDriverIdAndTimeOverlap(
+        //     ride.getDriverId(),
+        //     ride.getDepartureTime(),
+        //     ride.getArrivalTime()).isEmpty();
 
-        if (hasDriverConflict) {
-            throw new InvalidRideBookingException("Driver has another ride scheduled at the same time.");
-        }
+        // if (hasDriverConflict) {
+        //     throw new InvalidRideBookingException("Driver has another ride scheduled at the same time.");
+        // }
 
         //available seats >0
         if(ride.getSeatsAvailable() < 1) {

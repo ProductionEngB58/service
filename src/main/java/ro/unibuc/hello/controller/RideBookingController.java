@@ -55,7 +55,7 @@ public class RideBookingController {
         }
     }
 
-    @PatchMapping("/{rideId}/cancel")
+    @PatchMapping("/cancel/{rideId}/{passengerId}")
     public ResponseEntity<?> updateRideBookingStatusToCancelled(@PathVariable String rideId, @PathVariable String passengerId)
     {
         try {
