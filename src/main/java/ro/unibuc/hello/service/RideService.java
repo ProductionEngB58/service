@@ -12,25 +12,35 @@ import ro.unibuc.hello.dto.ride.RideResponseDTO;
 import ro.unibuc.hello.enums.RideStatus;
 import ro.unibuc.hello.exceptions.ride.InvalidRideException;
 import ro.unibuc.hello.exceptions.ride.RideConflictException;
+import ro.unibuc.hello.exceptions.rideBooking.InvalidRideBookingException;
 import ro.unibuc.hello.model.Ride;
+import ro.unibuc.hello.model.RideBooking;
 import ro.unibuc.hello.model.Vehicle;
 import ro.unibuc.hello.repository.RideRepository;
 import ro.unibuc.hello.repository.UserRepository;
 import ro.unibuc.hello.repository.VehicleRepository;
+import ro.unibuc.hello.repository.RideBookingRepository;
 
 @Service
 public class RideService {
     private final RideRepository rideRepository;
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
+    private final RideBookingRepository rideBookingRepository;
+    private final RideBookingService rideBookingService;
 
     public RideService(RideRepository rideRepository, 
                         UserRepository userRepository,
-                        VehicleRepository vehicleRepository
+                        VehicleRepository vehicleRepository,
+                        RideBookingRepository rideBookingRepository,
+                        RideBookingService rideBookingService
                         ) {
         this.rideRepository = rideRepository;
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
+        this.rideBookingRepository = rideBookingRepository;
+        this.rideBookingService = rideBookingService;
+        
     }
 
     public List<Ride> getAllRides() {
@@ -69,13 +79,27 @@ public class RideService {
         } 
         
         // Check if driver it's involved in other ride as driver that's overlapping current
-        rideRepository.findByDriverIdAndTimeOverlap(
+        if(!rideRepository.findByDriverIdAndTimeOverlap(
                     rideRequestDTO.getDriverId(), 
                     rideRequestDTO.getDepartureTime(),
                     rideRequestDTO.getArrivalTime()
-                ).ifPresent(ride ->  { throw new RideConflictException("Driver involved in another ride."); });
+                ).isEmpty()) {
+            throw new RideConflictException("Driver involved in another ride.");
+        }
 
         // TODO Check if driver it's involved in other ride as passenger that's overlapping current
+        List<RideBooking> bookingsInvolvedAsPassenger = rideBookingRepository
+                        .findByPassengerId(rideRequestDTO.getDriverId());
+
+        for (RideBooking booking : bookingsInvolvedAsPassenger) {
+            if (!rideRepository.findByIdAndTimeOverlap(
+                booking.getRideId(),
+                rideRequestDTO.getDepartureTime(),
+                rideRequestDTO.getArrivalTime()
+            ).isEmpty()) {
+                throw new InvalidRideBookingException("Driver involved in another ride at the same time as passenger.");
+            }
+        }
 
         Ride newRide = rideRequestDTO.toEntity();
 
@@ -85,9 +109,11 @@ public class RideService {
 
     }
 
-    public List<Ride> getRidesByDate(LocalDate date) {
-        Instant startOfDay = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Instant endOfDay = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+    public List<Ride> getRidesByDate(Instant date) {
+        LocalDate localDate = date.atZone(ZoneOffset.UTC).toLocalDate();
+    
+        Instant startOfDay = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant endOfDay = localDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
         
         return rideRepository.findAllByDepartureDate(startOfDay, endOfDay);
     }
@@ -136,7 +162,14 @@ public class RideService {
             throw new InvalidRideException("Ride cannot be canceled after departure time.");
         }
         
+        List<RideBooking> bookings = rideBookingRepository.findByRideId(rideId);
+        for (RideBooking booking : bookings) {
+            rideBookingService.updateRideBookingStatusToCancelled(rideId, booking.getPassengerId());
+        }
+
         ride.setStatus(RideStatus.CANCELLED);
+        rideBookingRepository.saveAll(bookings);
+
         return RideResponseDTO.toDTO(rideRepository.save(ride));
     }
 }

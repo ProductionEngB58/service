@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -75,33 +76,38 @@ public class RideBookingService {
             .orElseThrow(() -> new InvalidRideException("Ride ID does not exist."));
 
         //passenger shouldnt have already booked
-        List<RideBooking> existingBookings = rideBookingRepository.findByRideIdAndPassengerId(
-            ride.getId(), rideBookingRequestDTO.getPassengerId());
-        if (!existingBookings.isEmpty()) {
+        RideBooking existingBooking = rideBookingRepository.findByRideIdAndPassengerId(
+            ride.getId(), rideBookingRequestDTO.getPassengerId()
+            ).orElse(null);
+
+        if (existingBooking != null) {
             throw new InvalidRideBookingException("Passenger already booked for this ride.");
         }
             
 
         //check if the passenger has a conflicting ride
-        boolean hasPassengerConflict = !rideBookingRepository.findOverlappingRidesForPassenger(
-            rideBookingRequestDTO.getPassengerId(),
-            ride.getDepartureTime(),
-            ride.getArrivalTime()
-        ).isEmpty();
+        List<RideBooking> bookingsInvolvedAsPassenger = rideBookingRepository
+                        .findByPassengerId(rideBookingRequestDTO.getPassengerId());
 
-        if (hasPassengerConflict) {
-            throw new InvalidRideBookingException("Passenger has a conflicting ride.");
+        for (RideBooking booking : bookingsInvolvedAsPassenger) {
+            if (!rideRepository.findByIdAndTimeOverlap(
+                rideBookingRequestDTO.getRideId(),
+                ride.getDepartureTime(),
+                ride.getArrivalTime()
+            ).isEmpty()) {
+                throw new InvalidRideBookingException("User involved in another ride at the same time.");
+            }
         }
 
-        //check if the driver has a conflicting ride
-        boolean hasDriverConflict = !rideBookingRepository.findOverlappingRidesForDriver(
-            ride.getDriverId(),
-            ride.getDepartureTime(),
-            ride.getArrivalTime()).isEmpty();
+        // //check if the driver has a conflicting ride
+        // boolean hasDriverConflict = !rideRepository.findByDriverIdAndTimeOverlap(
+        //     ride.getDriverId(),
+        //     ride.getDepartureTime(),
+        //     ride.getArrivalTime()).isEmpty();
 
-        if (hasDriverConflict) {
-            throw new InvalidRideBookingException("Driver has another ride scheduled at the same time.");
-        }
+        // if (hasDriverConflict) {
+        //     throw new InvalidRideBookingException("Driver has another ride scheduled at the same time.");
+        // }
 
         //available seats >0
         if(ride.getSeatsAvailable() < 1) {
@@ -119,22 +125,26 @@ public class RideBookingService {
 
        rideBookingRepository.save(newRideBooking);
 
-       ride.setSeatsAvailable(ride.getSeatsAvailable()-1);
+       ride.setSeatsAvailable(ride.getSeatsAvailable() - 1);
        rideRepository.save(ride);
 
        return RideBookingResponseDTO.toDTO(newRideBooking);
     }
 
-    public RideBookingResponseDTO updateRideBookingStatusToCancelled(String rideId) {
-        RideBooking rideBooking = rideBookingRepository.findById(rideId)
-                .orElseThrow(() -> new InvalidRideBookingException("RideBooking not found."));
-        
-        Ride ride = rideRepository.findById(rideBooking.getRideId())
+    public RideBookingResponseDTO updateRideBookingStatusToCancelled(String rideId, String passengerId) {
+        Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new InvalidRideException("Ride not found."));
-        
+
+        RideBooking rideBooking = rideBookingRepository.findByRideIdAndPassengerId(rideId, passengerId)
+                        .orElse(null);
+
+        if (rideBooking == null) {
+            throw new InvalidRideBookingException("Booking not found.");
+        }
+
         // check if the rideBooking status is BOOKED
         if (rideBooking.getRideBookingStatus() != RideBookingStatus.BOOKED) {
-            throw new InvalidRideBookingException("Ride status must be BOOKED to cancel.");
+            throw new InvalidRideBookingException("Ride already cancelled.");
         }
     
         // Check if instant.now < departure time
@@ -143,6 +153,9 @@ public class RideBookingService {
         }
     
         rideBooking.setRideBookingStatus(RideBookingStatus.CANCELLED);
+
+        ride.setSeatsAvailable(ride.getSeatsAvailable() + 1);
+        rideRepository.save(ride);
         
         return RideBookingResponseDTO.toDTO(rideBookingRepository.save(rideBooking));
     }

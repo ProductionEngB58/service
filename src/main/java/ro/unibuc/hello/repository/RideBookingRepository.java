@@ -19,13 +19,13 @@ public interface RideBookingRepository extends MongoRepository<RideBooking, Stri
     // Query bookings created within a specific time range
     List<RideBooking> findByCreatedAtBetween(Instant startTime, Instant endTime);
 
-    List<RideBooking>findByRideIdAndPassengerId(String rideId, String passengerId);
+    Optional<RideBooking> findByRideIdAndPassengerId(String rideId, String passengerId);
 
     List<RideBooking> findByRideId(String rideId);
     
     
     //overlapping rides for passenger
-   @Query("{ 'passengerId': ?0, 'departureTime': { $lt: ?2 }, 'arrivalTime': { $gt: ?1 } }")
+    @Query("{ 'passengerId': ?0, 'departureTime': { $lt: ?2 }, 'arrivalTime': { $gt: ?1 } }")
     List<RideBooking> findOverlappingRidesForPassenger(String passengerId, Instant departureTime, Instant arrivalTime);
 
 

@@ -55,11 +55,11 @@ public class RideBookingController {
         }
     }
 
-    @PatchMapping("/{rideId}/cancel")
-    public ResponseEntity<?> updateRideBookingStatusToCancelled(@PathVariable String rideId)
+    @PatchMapping("/cancel/{rideId}/{passengerId}")
+    public ResponseEntity<?> updateRideBookingStatusToCancelled(@PathVariable String rideId, @PathVariable String passengerId)
     {
         try {
-            rideBookingService.updateRideBookingStatusToCancelled(rideId);
+            rideBookingService.updateRideBookingStatusToCancelled(rideId, passengerId);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
         } catch (InvalidRideBookingException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
