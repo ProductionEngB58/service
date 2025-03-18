@@ -27,16 +27,19 @@ public class RideService {
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
     private final RideBookingRepository rideBookingRepository;
+    private final RideBookingService rideBookingService;
 
     public RideService(RideRepository rideRepository, 
                         UserRepository userRepository,
                         VehicleRepository vehicleRepository,
-                        RideBookingRepository rideBookingRepository
+                        RideBookingRepository rideBookingRepository,
+                        RideBookingService rideBookingService
                         ) {
         this.rideRepository = rideRepository;
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
         this.rideBookingRepository = rideBookingRepository;
+        this.rideBookingService = rideBookingService;
         
     }
 
@@ -106,9 +109,11 @@ public class RideService {
 
     }
 
-    public List<Ride> getRidesByDate(LocalDate date) {
-        Instant startOfDay = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Instant endOfDay = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+    public List<Ride> getRidesByDate(Instant date) {
+        LocalDate localDate = date.atZone(ZoneOffset.UTC).toLocalDate();
+    
+        Instant startOfDay = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant endOfDay = localDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
         
         return rideRepository.findAllByDepartureDate(startOfDay, endOfDay);
     }
@@ -157,7 +162,14 @@ public class RideService {
             throw new InvalidRideException("Ride cannot be canceled after departure time.");
         }
         
+        List<RideBooking> bookings = rideBookingRepository.findByRideId(rideId);
+        for (RideBooking booking : bookings) {
+            rideBookingService.updateRideBookingStatusToCancelled(rideId, booking.getPassengerId());
+        }
+
         ride.setStatus(RideStatus.CANCELLED);
+        rideBookingRepository.saveAll(bookings);
+
         return RideResponseDTO.toDTO(rideRepository.save(ride));
     }
 }

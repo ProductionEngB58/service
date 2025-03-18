@@ -1,5 +1,6 @@
 package ro.unibuc.hello.controller;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ro.unibuc.hello.dto.ride.RideRequestDTO;
 import ro.unibuc.hello.dto.ride.RideResponseDTO;
@@ -37,7 +40,7 @@ public class RideController {
     // GET /rides/by-date?date=YYYY-MM-DD 
     @GetMapping("/by-date")
     public ResponseEntity<List<RideResponseDTO>> getRidesByDate(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC") Instant date) {
         List<RideResponseDTO> rides = rideService.getRidesByDate(date)
                                                  .stream()
                                                  .map(RideResponseDTO::toDTO)
