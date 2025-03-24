@@ -36,4 +36,29 @@ public class ReviewResponseDTO {
             review.getCreatedAt()
         );
     } 
+
+    public String getReviewerId() {
+        return reviewerId;
+    }
+    
+    public String getReviewedId() {
+        return reviewedId;
+    }
+    
+    public String getRideId() {
+        return rideId;
+    }
+    
+    public int getRating() {
+        return rating;
+    }
+    
+    public String getComment() {
+        return comment;
+    }
+    
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+    
 }
