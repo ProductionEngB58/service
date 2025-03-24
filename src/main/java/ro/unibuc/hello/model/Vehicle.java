@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ro.unibuc.hello.dto.vehicle.VehicleDTO;
 
 @Document("vehicles")
 @NoArgsConstructor
@@ -22,6 +23,15 @@ public class Vehicle {
         this.brand = brand;
         this.model = model;
         this.licensePlate = licensePlate;
+    }
+
+    public VehicleDTO toDTO() {
+        return new VehicleDTO(
+            this.getUserId(),
+            this.getBrand(),
+            this.getModel(),
+            this.getLicensePlate()
+        );
     }
 
     public String getId() {

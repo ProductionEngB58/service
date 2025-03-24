@@ -67,6 +67,10 @@ Content-Type: application/json
     "licensePlate": "{{licensePlate}}"
 }
 
+### Update vehicle license plate
+PATCH http://localhost:8081/vehicles/GJ06CXR/B01BBB
+
+
 ### Create new ride
 @driverId = 67d767dca086f159e0e3ad65
 @startLocation = Bucharest
