@@ -26,7 +26,8 @@ import ro.unibuc.hello.repository.RideBookingRepository;
 import ro.unibuc.hello.exception.EntityNotFoundException;
 import ro.unibuc.hello.enums.RideBookingStatus;
 
-
+import java.time.Clock;
+import java.time.Instant;
 
 @Service
 public class RideBookingService {
@@ -34,13 +35,15 @@ public class RideBookingService {
     private final UserRepository userRepository;
     private final RideRepository rideRepository;
     private final UserService userService;
+    private final Clock clock;
 
-    public RideBookingService(RideBookingRepository rideBookingRepository, UserRepository userRepository, RideRepository rideRepository, UserService userService)
+    public RideBookingService(RideBookingRepository rideBookingRepository, UserRepository userRepository, RideRepository rideRepository, UserService userService, Clock clock)
     {
         this.rideBookingRepository = rideBookingRepository;
         this.userRepository = userRepository;
         this.rideRepository = rideRepository;
         this.userService = userService;
+        this.clock = clock;
     }
 
     public List<RideBookingResponseDTO> getPassengersByRideId(String rideId) {
@@ -99,16 +102,6 @@ public class RideBookingService {
             }
         }
 
-        // //check if the driver has a conflicting ride
-        // boolean hasDriverConflict = !rideRepository.findByDriverIdAndTimeOverlap(
-        //     ride.getDriverId(),
-        //     ride.getDepartureTime(),
-        //     ride.getArrivalTime()).isEmpty();
-
-        // if (hasDriverConflict) {
-        //     throw new InvalidRideBookingException("Driver has another ride scheduled at the same time.");
-        // }
-
         //available seats >0
         if(ride.getSeatsAvailable() < 1) {
             throw new InvalidRideBookingException("No more seats available");
@@ -148,7 +141,7 @@ public class RideBookingService {
         }
     
         // Check if instant.now < departure time
-        if (Instant.now().isBefore(ride.getDepartureTime())) {
+        if (!clock.instant().isBefore(ride.getDepartureTime())) {
             throw new InvalidRideBookingException("Ride cannot be cancelled after it started.");
         }
     

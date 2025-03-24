@@ -33,10 +33,10 @@ Content-Type: application/json
 }
 
 ### Create new user
-@firstName = Ene
+@firstName = mircea
 @lastName = Daniel
-@mail = e@gmail.com 
-@phoneNumber = 0724571085
+@mail = m@gmail.com 
+@phoneNumber = 0724593085
 @password = parolamea123
 POST http://localhost:8081/users
 Content-Type: application/json
@@ -53,10 +53,10 @@ Content-Type: application/json
 GET http://localhost:8081/vehicles
 
 ### Add new vehicle
-@userId = 67d767dca086f159e0e3ad65
+@userId = 67e17bdac293dd459fd02d3a
 @brand = BMW
 @model = Series3
-@licensePlate = B123MMM
+@licensePlate = B123sMM
 POST http://localhost:8081/vehicles
 Content-Type: application/json
 
@@ -68,26 +68,26 @@ Content-Type: application/json
 }
 
 ### Create new ride
-@driverId = 67d767dca086f159e0e3ad65
+@driverId = 67e17bdac293dd459fd02d3a
 @startLocation = Bucharest
 @endLocation = Cluj-Napoca
-@departureTime = 2025-03-20T10:00:00.000Z
-@arrivalTime = 2025-03-18T12:00:00.000Z
+@departureTime = 2025-03-26T10:00:00.000Z
+@arrivalTime = 2025-03-26T12:00:00.000Z
 @seatPrice = 50
 @seatsAvailable = 3
-@carLicensePlate = B123MMM
+@carLicensePlate = B123sMM
 POST http://localhost:8081/rides
 Content-Type: application/json
 
 {
-    "driverId": "67d02c7ce08f3e1e5c96ef95",
+    "driverId": "67e17bdac293dd459fd02d3a",
     "startLocation": "Bucharest",
     "endLocation": "Cluj-Napoca",
-    "departureTime": "2025-03-18T12:52:00.000Z",
-    "arrivalTime": "2025-03-18T13:51:00.000Z",
+    "departureTime": "2025-03-26T10:00:00.000Z",
+    "arrivalTime": "2025-03-26T12:00:00.000Z",
     "seatPrice": 50,
     "seatsAvailable": 3,
-    "carLicensePlate": "B123XYZ"
+    "carLicensePlate": "B123sMM"
 }
 
 ### Get all greetings
@@ -108,9 +108,9 @@ GET http://localhost:8080/info
     ?title={{content}}
 
 ### Add a passenger to a ride
-@rideId = 67d60c0f12400d215806d06c
-@passengerId = 67d88f7103fbe777e3acfe0d
-@createdAt = 2024-03-17T12:00:00.000Z
+@rideId = 67e17cb6c293dd459fd02d3c
+@passengerId = 67e17e56c293dd459fd02d3d
+@createdAt = 2024-03-24T17:00:00.000Z
 POST http://localhost:8081/bookings
 Content-Type: application/json
 
