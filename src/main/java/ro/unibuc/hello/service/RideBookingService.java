@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import ro.unibuc.hello.dto.rideBooking.RideBookingRequestDTO;
 import ro.unibuc.hello.dto.rideBooking.RideBookingResponseDTO;
@@ -26,7 +27,8 @@ import ro.unibuc.hello.repository.RideBookingRepository;
 import ro.unibuc.hello.exception.EntityNotFoundException;
 import ro.unibuc.hello.enums.RideBookingStatus;
 
-
+import java.time.Clock;
+import java.time.Instant;
 
 @Service
 public class RideBookingService {
@@ -34,13 +36,15 @@ public class RideBookingService {
     private final UserRepository userRepository;
     private final RideRepository rideRepository;
     private final UserService userService;
+    private final Clock clock;
 
-    public RideBookingService(RideBookingRepository rideBookingRepository, UserRepository userRepository, RideRepository rideRepository, UserService userService)
+    public RideBookingService(RideBookingRepository rideBookingRepository, UserRepository userRepository, RideRepository rideRepository, UserService userService, Clock clock)
     {
         this.rideBookingRepository = rideBookingRepository;
         this.userRepository = userRepository;
         this.rideRepository = rideRepository;
         this.userService = userService;
+        this.clock = clock;
     }
 
     public List<RideBookingResponseDTO> getPassengersByRideId(String rideId) {
@@ -64,6 +68,7 @@ public class RideBookingService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public RideBookingResponseDTO createRideBooking (RideBookingRequestDTO rideBookingRequestDTO)
     {
         //check if passenger id is in users collection
@@ -98,16 +103,6 @@ public class RideBookingService {
                 throw new InvalidRideBookingException("User involved in another ride at the same time.");
             }
         }
-
-        // //check if the driver has a conflicting ride
-        // boolean hasDriverConflict = !rideRepository.findByDriverIdAndTimeOverlap(
-        //     ride.getDriverId(),
-        //     ride.getDepartureTime(),
-        //     ride.getArrivalTime()).isEmpty();
-
-        // if (hasDriverConflict) {
-        //     throw new InvalidRideBookingException("Driver has another ride scheduled at the same time.");
-        // }
 
         //available seats >0
         if(ride.getSeatsAvailable() < 1) {
@@ -148,7 +143,7 @@ public class RideBookingService {
         }
     
         // Check if instant.now < departure time
-        if (Instant.now().isBefore(ride.getDepartureTime())) {
+        if (!clock.instant().isBefore(ride.getDepartureTime())) {
             throw new InvalidRideBookingException("Ride cannot be cancelled after it started.");
         }
     

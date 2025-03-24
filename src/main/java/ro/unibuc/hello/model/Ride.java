@@ -14,7 +14,6 @@ import lombok.Setter;
 import ro.unibuc.hello.enums.RideStatus;
 
 @Document("rides")
-@NoArgsConstructor
 @Getter
 @Setter
 public class Ride {
@@ -30,7 +29,8 @@ public class Ride {
     private String carLicensePlate;
     private RideStatus status;
 
-    
+    public Ride() {}
+
     public Ride(String driverId, String startLocation, String endLocation, 
                 Instant departureTime, Instant arrivalTime, int seatPrice, 
                 int seatsAvailable, String carLicensePlate) {

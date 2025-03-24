@@ -24,12 +24,13 @@ public class RideBookingResponseDTO {
         this.createdAt = createdAt;
     }
 
-    public static RideBookingResponseDTO toDTO(RideBooking rideBooking){
-        return new RideBookingResponseDTO(
+    public static RideBookingResponseDTO toDTO(RideBooking rideBooking) {
+        RideBookingResponseDTO dto = new RideBookingResponseDTO(
             rideBooking.getRideId(),
-            rideBooking.getRideBookingStatus(),
+            rideBooking.getRideBookingStatus() != null ? rideBooking.getRideBookingStatus() : RideBookingStatus.BOOKED,
             rideBooking.getCreatedAt()
         );
+        return dto;
     }
 
     public String getPassengerFullName() {
@@ -48,11 +49,11 @@ public class RideBookingResponseDTO {
         this.rideId = rideId;
     }
 
-    public RideBookingStatus getBookingStatus() {
+    public RideBookingStatus getRideBookingStatus() {
         return bookingStatus;
     }
 
-    public void setBookingStatus(RideBookingStatus bookingStatus) {
+    public void setRideBookingStatus(RideBookingStatus bookingStatus) {
         this.bookingStatus = bookingStatus;
     }
 
