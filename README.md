@@ -1,3 +1,23 @@
+# Project Description
+
+This project was implemented to simulate the behavior of a ride sharing app. Long story short, the system provides the users with functionalities like creating new rides, booking a seat, bookings & rides status management and also a review system for the drivers.
+
+# ⚙️ Key Features
+
+ - Create new ride
+ - View available rides by day
+ - Status management: ( -> IN_PROGRESS / COMPLETED / CANCELLED)
+
+ - Book a seat for a ride
+ - Cancel a booking for a ride
+ - See booked passengers for a specific ride
+
+ - Post a review after a ride completion as passenger
+ - See the reviews for a driver by user ID
+ - See the reviews for a ride by ride ID
+
+ - & other mandatory functionalities for creating users & vehicles in the system
+
 # Prerequisites
 
 For using Github Codespaces, no prerequisites are mandatory.

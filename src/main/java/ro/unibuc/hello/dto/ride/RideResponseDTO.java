@@ -62,4 +62,6 @@ public class RideResponseDTO {
     public String getEndLocation() {
         return endLocation;
     }
+
+    
 }
