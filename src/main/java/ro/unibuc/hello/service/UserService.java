@@ -22,14 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ApplicationEventPublisher eventPublisher;
 
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, 
-                        ApplicationEventPublisher eventPublisher) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.eventPublisher = eventPublisher;
     }
 
     public List<User> getAllUsers() {
@@ -50,9 +46,7 @@ public class UserService {
         String passwordHash = passwordEncoder.encode(userDto.getPassword());
         newUser.setPasswordHash(passwordHash);
 
-        userRepository.save(newUser);
-
-        return UserResponseDTO.toDTO(newUser);
+        return userRepository.save(newUser).toDTO();
     }
 
 
@@ -68,21 +62,20 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with mail: " + mail));
     }
 
-    public boolean existsByMail(String mail) {
-        return userRepository.findByMail(mail)
-                .isPresent();
-    }
+    // public boolean existsByMail(String mail) {
+    //     return userRepository.findByMail(mail)
+    //             .isPresent();
+    // }
 
-    public void updateUserName(String id, String newFirstName, String newLastName) {
+    public UserResponseDTO updateUserName(String id, String newFirstName, String newLastName) {
         
         Optional<User> userOptional = userRepository.findById(id);
+
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
-            userRepository.save(user);
-
-            eventPublisher.publishEvent(new UserUpdatedEvent(id, newFirstName, newLastName));
+            userRepository.save(user).toDTO();
         }
 
     }
