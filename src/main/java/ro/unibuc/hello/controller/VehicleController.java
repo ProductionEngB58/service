@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import ro.unibuc.hello.dto.vehicle.VehicleDTO;
 import ro.unibuc.hello.exceptions.vehicle.VehicleConflictException;
+import ro.unibuc.hello.model.Vehicle;
 import ro.unibuc.hello.service.VehicleService;
 
 @Controller
@@ -21,8 +22,8 @@ public class VehicleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VehicleDTO>> getAll() {
-        List<VehicleDTO> vehicles = vehicleService.getAll();
+    public ResponseEntity<List<Vehicle>> getAll() {
+        List<Vehicle> vehicles = vehicleService.getAll();
         return ResponseEntity.ok(vehicles);
     }
 
@@ -31,6 +32,30 @@ public class VehicleController {
         try {
             VehicleDTO vehicleResponse = vehicleService.addVehicle(vehicleDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        } catch (VehicleConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{oldLicensePlate}/{newLicensePlate}")
+    public ResponseEntity<?> updateVehicleLicensePlate(@PathVariable String oldLicensePlate, @PathVariable String newLicensePlate) {
+        try {
+            VehicleDTO vehicleResponse = vehicleService.updateLicensePlate(oldLicensePlate, newLicensePlate);
+            return ResponseEntity.status(HttpStatus.OK).body(vehicleResponse);
+        } catch (VehicleConflictException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{licensePlate}")
+    public ResponseEntity<?> deleteVehicle(@PathVariable String licensePlate) {
+        try {
+            vehicleService.deleteByLicensePlate(licensePlate);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         } catch (VehicleConflictException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {

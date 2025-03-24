@@ -22,11 +22,8 @@ public class VehicleService {
         this.userRepository = userRepository;
     }
 
-    public List<VehicleDTO> getAll() {
-        return vehicleRepository.findAll()
-                                .stream()
-                                .map(VehicleDTO::toDTO)
-                                .collect(Collectors.toList());
+    public List<Vehicle> getAll() {
+        return vehicleRepository.findAll();
         
     }
     
@@ -42,5 +39,27 @@ public class VehicleService {
         vehicleRepository.save(vehicleDTO.toEntity());
 
         return vehicleDTO;
+    }
+
+    public VehicleDTO updateLicensePlate(String oldLicensePlate, String newLicensePlate) {
+        if (!vehicleRepository.existsByLicensePlate(oldLicensePlate)) {
+            throw new VehicleConflictException("License plate does not match any car in the system.");
+        } else if (vehicleRepository.existsByLicensePlate(newLicensePlate)) {
+            throw new VehicleConflictException("License plate already used, try a new one.");
+        }
+
+        Vehicle vehicle = vehicleRepository.findOneByLicensePlate(oldLicensePlate);
+
+        vehicle.setLicensePlate(newLicensePlate);
+
+        return vehicleRepository.save(vehicle).toDTO();
+    }
+
+    public void deleteByLicensePlate(String licensePlate) {
+        if (!vehicleRepository.existsByLicensePlate(licensePlate)) {
+            throw new VehicleConflictException("License plate does not match any car in the system.");
+        } 
+
+        vehicleRepository.delete(vehicleRepository.findOneByLicensePlate(licensePlate));
     }
 }
