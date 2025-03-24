@@ -87,7 +87,7 @@ public class RideService {
             throw new RideConflictException("Driver involved in another ride.");
         }
 
-        // TODO Check if driver it's involved in other ride as passenger that's overlapping current
+        // Check if driver it's involved in other ride as passenger that's overlapping current
         List<RideBooking> bookingsInvolvedAsPassenger = rideBookingRepository
                         .findByPassengerId(rideRequestDTO.getDriverId());
 
