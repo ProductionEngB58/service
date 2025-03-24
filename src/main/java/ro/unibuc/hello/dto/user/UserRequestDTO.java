@@ -13,6 +13,15 @@ public class UserRequestDTO {
     private String phoneNumber;
     private String password;
 
+    public UserRequestDTO(String firstName, String lastName, String mail,
+                            String phoneNumber, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.mail = mail;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+    }
+
     public String getFirstName() {
         return firstName;
     }

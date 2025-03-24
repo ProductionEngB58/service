@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DuplicateKeyException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +24,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
+import ro.unibuc.hello.dto.user.UserRequestDTO;
 import ro.unibuc.hello.dto.user.UserResponseDTO;
+import ro.unibuc.hello.exceptions.user.InvalidUserException;
 import ro.unibuc.hello.model.User;
 import ro.unibuc.hello.repository.UserRepository;
 
@@ -113,22 +118,19 @@ public class UserServiceTest {
    }
 
    @Test
-   void testUpdateUsername() {
+   void testUpdateUsername_Success() {
 
     User userBefore = new User("Andrei", "Popescu", "andrei@gmail.com", "0787828282", new ArrayList<>());
-    User userAfter = new User("Andrei", "Popescu", "andrei@gmail.com", "0787828282", new ArrayList<>());
-
-    String newFirstName = "Razvan";
-    String newLastName = "Leclerc";
+    User userAfter = new User("Razvan", "Leclerc", "andrei@gmail.com", "0787828282", new ArrayList<>());
 
     when(userRepository.findById("1")).thenReturn(Optional.of(userBefore));
     when(userRepository.save(any(User.class))).thenReturn(userAfter);
 
-    UserResponseDTO result = userService.getUserById("1");
+    UserResponseDTO result = userService.updateUserName("1", "Andrei", "Popescu");
 
     // Assert name
-    assertEquals("Andrei", result.getFirstName());
-    assertEquals("Popescu", result.getLastName());
+    assertEquals("Razvan", result.getFirstName());
+    assertEquals("Leclerc", result.getLastName());
 
     // Assert mail
     assertEquals("andrei@gmail.com", result.getMail());
@@ -139,4 +141,74 @@ public class UserServiceTest {
     // Assert Rating = 0.0
     assertEquals(0.0, result.getAvgRating());
    }
+
+   @Test
+   void testUpdateUsername_UserNotFound() {
+
+    User userBefore = new User("Andrei", "Popescu", "andrei@gmail.com", "0787828282", new ArrayList<>());
+    User userAfter = new User("Razvan", "Leclerc", "andrei@gmail.com", "0787828282", new ArrayList<>());
+
+    when(userRepository.findById("1")).thenReturn(Optional.empty());
+
+    assertThrows(InvalidUserException.class, () -> {
+        userService.updateUserName("1", "Andrei", "Popescu");
+    });
+
+    verify(userRepository, times(1)).findById("1");
+    verify(userRepository, times(0)).save(any());
+
+   }
+
+   @Test 
+   void testCreateUser_Success() {
+
+    UserRequestDTO newUser = new UserRequestDTO("Andrei", "Popescu", "andrei@gmail.com", "0787828282", "parolamea");
+
+    when(userRepository.findByMail(newUser.getMail())).thenReturn(Optional.empty());
+    when(userRepository.findByPhoneNumber(newUser.getPhoneNumber())).thenReturn(Optional.empty());
+    when(userRepository.save(any(User.class))).thenReturn(newUser.toEntity());
+
+    UserResponseDTO result = userService.createUser(newUser);
+
+    assertEquals(newUser.getFirstName(), result.getFirstName());
+    assertEquals(newUser.getLastName(), result.getLastName());
+    assertEquals(newUser.getMail(), result.getMail());
+    assertEquals(newUser.getPhoneNumber(), result.getPhoneNumber());
+
+   }
+
+   @Test 
+   void testCreateUser_MailDuplicate() {
+
+    UserRequestDTO newUser = new UserRequestDTO("Andrei", "Popescu", "andrei@gmail.com", "0787828282", "parolamea");
+
+    when(userRepository.findByMail(newUser.getMail())).thenReturn(Optional.of(newUser.toEntity()));
+    assertThrows(DuplicateKeyException.class, () -> {
+        UserResponseDTO result = userService.createUser(newUser);
+    });
+
+    verify(userRepository, times(0)).save(any());
+    verify(userRepository, times(1)).findByMail(newUser.getMail());
+    verify(userRepository, times(0)).findByPhoneNumber(newUser.getPhoneNumber());
+
+   }
+
+   @Test 
+   void testCreateUser_PhoneDuplicate() {
+
+    UserRequestDTO newUser = new UserRequestDTO("Andrei", "Popescu", "andrei@gmail.com", "0787828282", "parolamea");
+
+    when(userRepository.findByMail(newUser.getMail())).thenReturn(Optional.empty());
+    when(userRepository.findByPhoneNumber(newUser.getPhoneNumber())).thenReturn(Optional.of(newUser.toEntity()));
+    assertThrows(DuplicateKeyException.class, () -> {
+        UserResponseDTO result = userService.createUser(newUser);
+    });
+
+    verify(userRepository, times(0)).save(any());
+    verify(userRepository, times(1)).findByMail(newUser.getMail());
+    verify(userRepository, times(1)).findByPhoneNumber(newUser.getPhoneNumber());
+
+   }
+
+
 }
