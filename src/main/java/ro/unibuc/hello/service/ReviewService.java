@@ -51,15 +51,28 @@ public class ReviewService {
     }
 
     public ReviewResponseDTO createReview(ReviewRequestDTO reviewRequestDTO) {
-        Optional<Ride> rideOptional = rideRepository.findById(reviewRequestDTO.getRideId());
+        // Check if reviewer exists in users table
+        if (!userRepository.existsById(reviewRequestDTO.getReviewerId())) {
+            throw new InvalidReviewException("Reviewer does not exist as user.");
+        }
 
+         // Check if reviewed exists in users table
+         if (!userRepository.existsById(reviewRequestDTO.getReviewedId())) {
+            throw new InvalidReviewException("Reviewed does not exist as user.");
+        }
+
+        // Check if reviewer is different from reviewed
+        if (reviewRequestDTO.getReviewerId().equals(reviewRequestDTO.getReviewedId())) {
+            throw new InvalidReviewException("Reviewer can't also be reviewed.");
+        }
+
+        Optional<Ride> rideOptional = rideRepository.findById(reviewRequestDTO.getRideId());
         // Check if ride exists in rides table
         if (rideOptional.isEmpty()) {
             throw new InvalidReviewException("Ride does not exist.");
         } 
 
         Ride ride = rideOptional.get();
-    
         // Check if ride status is completed
         if (!ride.getStatus().equals(RideStatus.COMPLETED)) {
             throw new InvalidReviewException("Ride is not completed.");
@@ -88,24 +101,10 @@ public class ReviewService {
             throw new InvalidReviewException("Reviewer already made a review for this ride");
         }
 
-        // Check if reviewer exists in users table
-        if (!userRepository.existsById(reviewRequestDTO.getReviewerId())) {
-            throw new InvalidReviewException("Reviewer does not exist as user.");
-        }
-
+        
         // Check if reviewed is driver of ride
         if (!ride.getDriverId().equals(reviewRequestDTO.getReviewedId())) {
             throw new InvalidReviewException("Reviewed is not driver of ride");
-        }
-
-        // Check if reviewed exists in users table
-        if (!userRepository.existsById(reviewRequestDTO.getReviewedId())) {
-            throw new InvalidReviewException("Reviewed does not exist as user.");
-        }
-
-        // Check if reviewer is different from reviewed
-        if (reviewRequestDTO.getReviewerId().equals(reviewRequestDTO.getReviewedId())) {
-            throw new InvalidReviewException("Reviewer can't also be reviewed.");
         }
 
         Review newReview = reviewRequestDTO.toEntity();
