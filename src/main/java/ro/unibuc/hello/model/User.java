@@ -38,6 +38,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.createdAt = Instant.now();
         this.roles = roles;
+        this.avgRating = (Double) 0.0;
     }   
 
     public UserResponseDTO fromEntity() {
@@ -47,6 +48,19 @@ public class User {
             this.getMail(),
             this.getPhoneNumber(),
             this.getCreatedAt(),
+            this.getAvgRating()
+        );
+        
+        return dto;
+    }   
+
+    public UserResponseDTO toDTO() {
+        UserResponseDTO dto = new UserResponseDTO(
+            this.getFirstName(),
+            this.getLastName(),
+            this.getMail(),
+            this.getPhoneNumber(),
+            this.getCreatedAt(),    
             this.getAvgRating()
         );
         
