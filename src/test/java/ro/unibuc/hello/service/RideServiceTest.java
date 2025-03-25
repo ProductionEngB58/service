@@ -70,11 +70,11 @@ public class RideServiceTest {
 
     @Test
     void testCreateRide_DriverNotFound() {
-        // Given
+       
         RideRequestDTO request = createValidRideRequest();
         when(userRepository.existsById(request.getDriverId())).thenReturn(false);
 
-        // When/Then
+   
         assertThrows(InvalidRideException.class, () -> {
             rideService.createRide(request);
         });
@@ -85,7 +85,7 @@ public class RideServiceTest {
 
     @Test
     void testCreateRide_DepartureTimeInPast() {
-        // Given
+
         RideRequestDTO request = createValidRideRequest();
         request.setDepartureTime(Instant.now().minusSeconds(3600)); // 1 hour in the past
         
@@ -280,7 +280,7 @@ public class RideServiceTest {
 
     @Test
     void testUpdateRideStatusToCompleted_NotInProgress() {
-        // Given
+
         String rideId = "ride123";
         String currentLocation = "Cluj";
         Ride mockRide = new Ride("driver1", "Bucuresti", "Cluj", 
@@ -289,7 +289,6 @@ public class RideServiceTest {
         
         when(rideRepository.findById(rideId)).thenReturn(Optional.of(mockRide));
 
-        // When/Then
         assertThrows(InvalidRideException.class, () -> {
             rideService.updateRideStatusToCompleted(rideId, currentLocation);
         });
@@ -300,7 +299,7 @@ public class RideServiceTest {
 
     @Test
     void testUpdateRideStatusToCompleted_LocationMismatch() {
-        // Given
+
         String rideId = "ride123";
         String wrongLocation = "Brasov";
         Ride mockRide = new Ride("driver1", "Bucuresti", "Cluj", 
@@ -309,7 +308,6 @@ public class RideServiceTest {
         
         when(rideRepository.findById(rideId)).thenReturn(Optional.of(mockRide));
 
-        // When/Then
         assertThrows(InvalidRideException.class, () -> {
             rideService.updateRideStatusToCompleted(rideId, wrongLocation);
         });
@@ -320,7 +318,7 @@ public class RideServiceTest {
 
     @Test
     void testUpdateRideStatusToCancelled_Success() {
-        // Given
+
         String rideId = "ride123";
         Ride mockRide = new Ride("driver1", "Bucuresti", "Cluj", 
             Instant.now().plusSeconds(3600), Instant.now().plusSeconds(7200), 50, 3, "B-123-ABC");
@@ -334,10 +332,8 @@ public class RideServiceTest {
         when(rideBookingRepository.findByRideId(rideId)).thenReturn(mockBookings);
         when(rideRepository.save(any(Ride.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
         RideResponseDTO result = rideService.updateRideStatusToCancelled(rideId);
 
-        // Then
         assertEquals(RideStatus.CANCELLED, mockRide.getStatus());
         verify(rideBookingRepository, times(1)).findByRideId(rideId);
         verify(rideBookingService, times(2)).updateRideBookingStatusToCancelled(anyString(), anyString());
@@ -366,7 +362,7 @@ public class RideServiceTest {
 
     @Test
     void testUpdateRideStatusToCancelled_DepartureTimePassed() {
-        // Given
+
         String rideId = "ride123";
         Ride mockRide = new Ride("driver1", "Bucuresti", "Cluj", 
             Instant.now().minusSeconds(3600), Instant.now().plusSeconds(3600), 50, 3, "B-123-ABC");
@@ -374,7 +370,6 @@ public class RideServiceTest {
         
         when(rideRepository.findById(rideId)).thenReturn(Optional.of(mockRide));
 
-        // When/Then
         assertThrows(InvalidRideException.class, () -> {
             rideService.updateRideStatusToCancelled(rideId);
         });
