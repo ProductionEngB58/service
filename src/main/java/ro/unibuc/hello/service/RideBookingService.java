@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import ro.unibuc.hello.dto.rideBooking.RideBookingRequestDTO;
 import ro.unibuc.hello.dto.rideBooking.RideBookingResponseDTO;
@@ -67,6 +68,7 @@ public class RideBookingService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public RideBookingResponseDTO createRideBooking (RideBookingRequestDTO rideBookingRequestDTO)
     {
         //check if passenger id is in users collection

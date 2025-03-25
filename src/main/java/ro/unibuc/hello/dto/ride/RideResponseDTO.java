@@ -54,4 +54,14 @@ public class RideResponseDTO {
             ride.getStatus()
         );
     }
+
+    public String getStartLocation() {
+        return startLocation;
+    }
+
+    public String getEndLocation() {
+        return endLocation;
+    }
+
+    
 }

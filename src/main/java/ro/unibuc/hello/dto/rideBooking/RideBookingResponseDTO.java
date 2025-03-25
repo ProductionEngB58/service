@@ -27,7 +27,7 @@ public class RideBookingResponseDTO {
     public static RideBookingResponseDTO toDTO(RideBooking rideBooking) {
         RideBookingResponseDTO dto = new RideBookingResponseDTO(
             rideBooking.getRideId(),
-            rideBooking.getRideBookingStatus() != null ? rideBooking.getBookingStatus() : RideBookingStatus.BOOKED,
+            rideBooking.getRideBookingStatus() != null ? rideBooking.getRideBookingStatus() : RideBookingStatus.BOOKED,
             rideBooking.getCreatedAt()
         );
         return dto;

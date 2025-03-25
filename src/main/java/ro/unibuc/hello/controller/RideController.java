@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ro.unibuc.hello.dto.ride.RideRequestDTO;
 import ro.unibuc.hello.dto.ride.RideResponseDTO;
+import ro.unibuc.hello.enums.RideStatus;
 import ro.unibuc.hello.exceptions.ride.InvalidRideException;
 import ro.unibuc.hello.exceptions.ride.RideConflictException;
 import ro.unibuc.hello.model.Ride;
@@ -43,6 +44,7 @@ public class RideController {
             @RequestParam @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC") Instant date) {
         List<RideResponseDTO> rides = rideService.getRidesByDate(date)
                                                  .stream()
+                                                 .filter(ride -> ride.getStatus() == RideStatus.SCHEDULED)
                                                  .map(RideResponseDTO::toDTO)
                                                  .collect(Collectors.toList());
         return ResponseEntity.ok(rides);

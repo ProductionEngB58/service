@@ -19,6 +19,20 @@ public class RideRequestDTO {
     private int seatsAvailable;
     private String carLicensePlate;
 
+    public RideRequestDTO(String driverId, String startLocation, String endLocation, 
+            Instant departureTime, Instant arrivalTime, int seatPrice,
+            int seatsAvailable, String carLicensePlate) {
+                
+        this.driverId = driverId;
+        this.startLocation = startLocation;
+        this.endLocation = endLocation;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        this.seatPrice = seatPrice;
+        this.seatsAvailable = seatsAvailable;
+        this.carLicensePlate = carLicensePlate;
+    }
+
     public Ride toEntity() {
         return new Ride(
             this.driverId,
