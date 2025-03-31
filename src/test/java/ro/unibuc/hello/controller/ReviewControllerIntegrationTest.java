@@ -78,7 +78,9 @@ public class ReviewControllerIntegrationTest {
         mockMvc.perform(get("/reviews/by-ride/ride1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].rating").value(5))
+                .andExpect(jsonPath("$[0].comment").value("Excellent ride!"));
     }
 
     @Test
