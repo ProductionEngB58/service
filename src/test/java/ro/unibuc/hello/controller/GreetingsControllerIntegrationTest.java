@@ -9,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -26,13 +28,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Clock;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
 @Tag("IntegrationTest")
+@SpringBootTest
 public class GreetingsControllerIntegrationTest {
 
     @Container
@@ -41,9 +45,11 @@ public class GreetingsControllerIntegrationTest {
             .withSharding();
 
 
+
     @BeforeAll
     public static void setUp() {
         mongoDBContainer.start();
+        System.out.println("MongoDB Container started at: " + mongoDBContainer.getReplicaSetUrl());
     }
     @AfterAll
     public static void tearDown() {
@@ -55,7 +61,8 @@ public class GreetingsControllerIntegrationTest {
         final String MONGO_URL = "mongodb://localhost:";
         final String PORT = String.valueOf(mongoDBContainer.getMappedPort(27017));
 
-        registry.add("mongodb.connection.url", () -> MONGO_URL + PORT);
+        registry.add("spring.data.mongodb.uri", 
+            () -> "mongodb://" + mongoDBContainer.getHost() + ":" + mongoDBContainer.getMappedPort(27017) + "/testdb");
     }
 
     @Autowired

@@ -42,6 +42,7 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
@@ -51,7 +52,7 @@ dependencies {
 	// Integration tests - test containers dependencies
     testImplementation "org.testcontainers:testcontainers:$testcontainersVersion"
     testImplementation "org.testcontainers:mongodb:$testcontainersVersion"
-	
+
 	//	E2E tests
 	runtimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
 	testImplementation "io.cucumber:cucumber-core:$cucumberVersion"

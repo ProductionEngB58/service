@@ -9,7 +9,6 @@ import lombok.Setter;
 import ro.unibuc.hello.dto.vehicle.VehicleDTO;
 
 @Document("vehicles")
-@NoArgsConstructor
 public class Vehicle {
     @Id
     private String id;
@@ -18,6 +17,8 @@ public class Vehicle {
     private String model;
     private String licensePlate;
 
+    public Vehicle() {}
+    
     public Vehicle(String userId, String brand, String model, String licensePlate) {
         this.userId = userId;
         this.brand = brand;

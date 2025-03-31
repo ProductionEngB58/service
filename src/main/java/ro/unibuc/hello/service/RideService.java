@@ -65,7 +65,7 @@ public class RideService {
 
         // Check if the number of available seats is > 0
         if (rideRequestDTO.getSeatsAvailable() < 1) {
-            throw new InvalidRideException("Number of seats has to be grater than 0.");
+            throw new InvalidRideException("Number of seats has to be greater than 0.");
         }
 
         // Check if the price is >= 0

@@ -2,6 +2,7 @@ package ro.unibuc.hello.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import ro.unibuc.hello.dto.Greeting;
 import ro.unibuc.hello.exception.EntityNotFoundException;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Component
+@Service
 public class GreetingsService {
 
     @Autowired
