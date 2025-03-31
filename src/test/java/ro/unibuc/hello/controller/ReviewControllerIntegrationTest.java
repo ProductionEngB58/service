@@ -1,0 +1,112 @@
+package ro.unibuc.hello.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+import ro.unibuc.hello.dto.review.ReviewRequestDTO;
+import ro.unibuc.hello.model.Review;
+import ro.unibuc.hello.service.ReviewService;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@Testcontainers
+@Tag("IntegrationTest")
+public class ReviewControllerIntegrationTest {
+
+    @Container
+    public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.20")
+            .withExposedPorts(27017).withSharding();
+
+    @BeforeAll
+    public static void setUp() {
+        mongoDBContainer.start();
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        mongoDBContainer.stop();
+    }
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        final String MONGO_URL = "mongodb://localhost:";
+        final String PORT = String.valueOf(mongoDBContainer.getMappedPort(27017));
+        registry.add("spring.data.mongodb.uri", () -> MONGO_URL + PORT);
+    }
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ReviewService reviewService;
+
+    @BeforeEach
+    public void cleanUpAndAddTestData() {
+        reviewService.deleteAllReviews();
+
+        Review review1 = new Review("user1", "driver1", "ride1", 5, "Excellent ride!");
+        Review review2 = new Review("user2", "driver1", "ride2", 4, "Good experience.");
+
+        reviewService.saveReview(review1);
+        reviewService.saveReview(review2);
+    }
+
+    @Test
+    public void testGetReviewsByRide() throws Exception {
+        mockMvc.perform(get("/reviews/by-ride/ride1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(1));
+    }
+
+    @Test
+    public void testGetReviewsByDriver() throws Exception {
+        mockMvc.perform(get("/reviews/by-driver/driver1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].reviewerId").value("user1"))
+                .andExpect(jsonPath("$[1].reviewerId").value("user2"));
+    }
+
+    @Test
+    public void testCreateReview() throws Exception {
+        ReviewRequestDTO validReviewRequest = new ReviewRequestDTO();
+        validReviewRequest.setReviewerId("user3");
+        validReviewRequest.setReviewedId("driver2");
+        validReviewRequest.setRideId("ride3");
+        validReviewRequest.setRating(5);
+        validReviewRequest.setComment("Great ride!");
+
+        mockMvc.perform(post("/reviews")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(validReviewRequest)))
+                .andExpect(status().isCreated());
+
+        List<Review> reviews = reviewService.getReviewsByRide("ride3");
+        Assertions.assertEquals(1, reviews.size());
+        Assertions.assertEquals("Great ride!", reviews.get(0).getComment());
+    }
+}

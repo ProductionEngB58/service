@@ -8,6 +8,7 @@ import ro.unibuc.hello.model.Review;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface ReviewRepository extends MongoRepository<Review, String> {
     List<Review> findByRideId(String rideId);
     List<Review> findByReviewedId(String reviewdId);

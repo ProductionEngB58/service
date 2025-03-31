@@ -46,13 +46,13 @@ public class GreetingsController {
 
     @PutMapping("/greetings/{id}")
     @ResponseBody
-    public Greeting updateGreeting(@PathVariable String id, @RequestBody Greeting greeting) throws EntityNotFoundException {
+    public Greeting updateGreeting(@PathVariable("id") String id, @RequestBody Greeting greeting) throws EntityNotFoundException {
         return greetingsService.updateGreeting(id, greeting);
     }
 
     @DeleteMapping("/greetings/{id}")
     @ResponseBody
-    public void deleteGreeting(@PathVariable String id) throws EntityNotFoundException {
+    public void deleteGreeting(@PathVariable("id") String id) throws EntityNotFoundException {
         greetingsService.deleteGreeting(id);
     }
 }
