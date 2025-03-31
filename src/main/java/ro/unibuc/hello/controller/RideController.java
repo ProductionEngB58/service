@@ -55,7 +55,7 @@ public class RideController {
     public ResponseEntity<?> createRide(@RequestBody RideRequestDTO rideRequestDTO) {
         try {
             RideResponseDTO rideResponse = rideService.createRide(rideRequestDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(null);
+            return ResponseEntity.status(HttpStatus.CREATED).body(rideResponse);
         } catch (InvalidRideException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RideConflictException e) {
