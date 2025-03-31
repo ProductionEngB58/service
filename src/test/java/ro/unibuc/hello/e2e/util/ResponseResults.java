@@ -14,6 +14,7 @@ public class ResponseResults {
 
     private final String body;
 
+    @SuppressWarnings("deprecation")
     public ResponseResults(final ClientHttpResponse response) throws IOException {
         this.theResponse = response;
         final InputStream bodyInputStream = response.getBody();
