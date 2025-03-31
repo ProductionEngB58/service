@@ -27,7 +27,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ro.unibuc.hello.dto.review.ReviewRequestDTO;
 import ro.unibuc.hello.model.Review;
+import ro.unibuc.hello.model.Ride;
+import ro.unibuc.hello.model.User;
+import ro.unibuc.hello.model.RideBooking;
 import ro.unibuc.hello.service.ReviewService;
+
+import ro.unibuc.hello.repository.RideBookingRepository;
+import ro.unibuc.hello.repository.RideRepository;
+import ro.unibuc.hello.repository.UserRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -60,11 +67,26 @@ public class ReviewControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private RideRepository rideRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private RideBookingRepository rideBookingRepository;
+
+    @Autowired
     private ReviewService reviewService;
 
     @BeforeEach
     public void cleanUpAndAddTestData() {
         reviewService.deleteAllReviews();
+        rideRepository.deleteAll();
+        userRepository.deleteAll();
+        rideBookingRepository.deleteAll();
 
         Review review1 = new Review("user1", "driver1", "ride1", 5, "Excellent ride!");
         Review review2 = new Review("user2", "driver1", "ride2", 4, "Good experience.");
@@ -101,6 +123,22 @@ public class ReviewControllerIntegrationTest {
         validReviewRequest.setRideId("ride3");
         validReviewRequest.setRating(5);
         validReviewRequest.setComment("Great ride!");
+
+        ride = new Ride("ride3", "startLocation", "endLocation", Instant.now(), Instant.now().plusSeconds(3600), 20, 3, "XYZ123");
+        ride.setStatus(RideStatus.COMPLETED);
+        rideBookingRepository.save(ride);
+
+        reviewer = new User("John", "Doe", "john@mail.com", "1234567890", Collections.singletonList(Role.PASSENGER));
+        reviewer.setId("user3");
+        userRepository.save(reviewer);
+
+        reviewed = new User("Driver", "One", "driver@mail.com", "0987654321", Collections.singletonList(Role.DRIVER));
+        reviewed.setId("driver2");
+        userRepository.save(reviewed);
+
+        rideBooking = new RideBooking("ride3", "user3", Instant.now());
+        rideBooking.setRideBookingStatus(RideBookingStatus.BOOKED);
+        rideBookingRepository.save(rideBooking);
 
         mockMvc.perform(post("/reviews")
                 .contentType(MediaType.APPLICATION_JSON)
