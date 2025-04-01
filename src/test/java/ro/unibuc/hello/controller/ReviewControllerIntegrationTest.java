@@ -2,6 +2,10 @@ package ro.unibuc.hello.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
+
+import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +33,9 @@ import ro.unibuc.hello.dto.review.ReviewRequestDTO;
 import ro.unibuc.hello.model.Review;
 import ro.unibuc.hello.model.Ride;
 import ro.unibuc.hello.model.User;
+import ro.unibuc.hello.enums.RideBookingStatus;
+import ro.unibuc.hello.enums.Role;
+import ro.unibuc.hello.enums.RideStatus;
 import ro.unibuc.hello.model.RideBooking;
 import ro.unibuc.hello.service.ReviewService;
 
@@ -71,9 +78,6 @@ public class ReviewControllerIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private VehicleRepository vehicleRepository;
 
     @Autowired
     private RideBookingRepository rideBookingRepository;
@@ -124,19 +128,19 @@ public class ReviewControllerIntegrationTest {
         validReviewRequest.setRating(5);
         validReviewRequest.setComment("Great ride!");
 
-        ride = new Ride("ride3", "startLocation", "endLocation", Instant.now(), Instant.now().plusSeconds(3600), 20, 3, "XYZ123");
+        Ride ride = new Ride("ride3", "startLocation", "endLocation", Instant.now(), Instant.now().plusSeconds(3600), 20, 3, "XYZ123");
         ride.setStatus(RideStatus.COMPLETED);
-        rideBookingRepository.save(ride);
+        rideRepository.save(ride);
 
-        reviewer = new User("John", "Doe", "john@mail.com", "1234567890", Collections.singletonList(Role.PASSENGER));
+        User reviewer = new User("John", "Doe", "john@mail.com", "1234567890", Collections.singletonList(Role.PASSENGER));
         reviewer.setId("user3");
         userRepository.save(reviewer);
 
-        reviewed = new User("Driver", "One", "driver@mail.com", "0987654321", Collections.singletonList(Role.DRIVER));
+        User reviewed = new User("Driver", "One", "driver@mail.com", "0987654321", Collections.singletonList(Role.DRIVER));
         reviewed.setId("driver2");
         userRepository.save(reviewed);
 
-        rideBooking = new RideBooking("ride3", "user3", Instant.now());
+        RideBooking rideBooking = new RideBooking("ride3", "user3", Instant.now());
         rideBooking.setRideBookingStatus(RideBookingStatus.BOOKED);
         rideBookingRepository.save(rideBooking);
 
