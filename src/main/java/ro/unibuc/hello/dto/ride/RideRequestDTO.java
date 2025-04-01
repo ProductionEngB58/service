@@ -33,6 +33,8 @@ public class RideRequestDTO {
         this.carLicensePlate = carLicensePlate;
     }
 
+    public RideRequestDTO(){}
+
     public Ride toEntity() {
         return new Ride(
             this.driverId,

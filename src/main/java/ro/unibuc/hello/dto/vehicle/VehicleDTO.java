@@ -28,6 +28,7 @@ public class VehicleDTO {
             this.licensePlate
         );
     }
+    public VehicleDTO() {}
 
     public static VehicleDTO toDTO(Vehicle vehicle) {
         return new VehicleDTO(
