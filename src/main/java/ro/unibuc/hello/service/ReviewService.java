@@ -42,6 +42,14 @@ public class ReviewService {
         this.rideBookingRepository = rideBookingRepository;
     }
 
+    public void deleteAllReviews() {
+        reviewRepository.deleteAll();
+    }
+
+    public Review saveReview(Review review) {
+        return reviewRepository.save(review);
+    }
+
     public List<Review> getReviewsByRide(String id) {
         return reviewRepository.findByRideId(id);
     }

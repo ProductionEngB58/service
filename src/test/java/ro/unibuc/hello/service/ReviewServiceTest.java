@@ -3,23 +3,18 @@ package ro.unibuc.hello.service;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ro.unibuc.hello.dto.review.ReviewRequestDTO;
@@ -36,12 +31,9 @@ import ro.unibuc.hello.repository.RideBookingRepository;
 import ro.unibuc.hello.repository.RideRepository;
 import ro.unibuc.hello.repository.ReviewRepository;
 import ro.unibuc.hello.repository.UserRepository;
-import ro.unibuc.hello.service.ReviewService;
 
 import java.time.Instant;
-import java.util.Optional;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
