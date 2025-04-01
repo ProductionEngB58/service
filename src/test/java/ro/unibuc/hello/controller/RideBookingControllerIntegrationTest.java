@@ -136,9 +136,9 @@ public class RideBookingControllerIntegrationTest {
         userRepository.save(cancelUser);
     
         // Ensure the ride starts in the future
-        Instant fixedNow = Instant.parse("2025-03-31T21:54:00Z");  // Current time
-        Instant departureTime = Instant.parse("2025-03-31T20:00:00Z");  
-        Instant arrivalTime = Instant.parse("2025-03-31T21:00:00Z"); 
+        Instant fixedNow = Instant.parse("2025-04-01T21:54:00Z");  // Current time
+        Instant departureTime = Instant.parse("2025-04-01T20:00:00Z");  
+        Instant arrivalTime = Instant.parse("2025-04-01T21:00:00Z"); 
 
         // Create a mock Clock to return the fixed current time
         Clock fixedClock = Clock.fixed(fixedNow, ZoneId.of("UTC"));
@@ -149,7 +149,7 @@ public class RideBookingControllerIntegrationTest {
         rideRepository.save(testRide);
     
         // Book a ride for the test user
-        RideBooking rideBooking = new RideBooking("r3", "p4", Instant.parse("2025-03-31T21:39:58Z"));
+        RideBooking rideBooking = new RideBooking("r3", "p4", Instant.parse("2025-04-01T21:39:58Z"));
         rideBooking.setRideBookingStatus(RideBookingStatus.BOOKED);
         rideBookingRepository.save(rideBooking);
 

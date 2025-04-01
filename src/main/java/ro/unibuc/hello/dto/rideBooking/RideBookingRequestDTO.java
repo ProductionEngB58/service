@@ -21,6 +21,8 @@ public class RideBookingRequestDTO {
         );
     }
 
+    public RideBookingRequestDTO(){}
+
     public String getRideId() {
         return rideId;
     }
