@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ro.unibuc.hello.dto.Greeting;
 
 import org.junit.jupiter.api.*;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -39,15 +41,16 @@ public class GreetingsControllerIntegrationTest {
 
     @Container
     public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.20")
-            .withExposedPorts(27017)
+            .withExposedPorts(27017)           
             .withSharding();
+
+
 
     @BeforeAll
     public static void setUp() {
         mongoDBContainer.start();
         System.out.println("MongoDB Container started at: " + mongoDBContainer.getReplicaSetUrl());
     }
-
     @AfterAll
     public static void tearDown() {
         mongoDBContainer.stop();

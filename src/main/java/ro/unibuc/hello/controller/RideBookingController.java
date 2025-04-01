@@ -34,7 +34,7 @@ public class RideBookingController {
     //Get all passengers for a ride: /bookings/{rideId}/passengers
 
     @GetMapping("/{rideId}/passengers")
-    public ResponseEntity<List<RideBookingResponseDTO>> getPassengersByRideId(@PathVariable String rideId) {
+    public ResponseEntity<List<RideBookingResponseDTO>> getPassengersByRideId(@PathVariable("rideId") String rideId) {
         List<RideBookingResponseDTO> passengers = rideBookingService.getPassengersByRideId(rideId);
         return ResponseEntity.ok(passengers);
     }
@@ -56,7 +56,7 @@ public class RideBookingController {
     }
 
     @PatchMapping("/cancel/{rideId}/{passengerId}")
-    public ResponseEntity<?> updateRideBookingStatusToCancelled(@PathVariable String rideId, @PathVariable String passengerId)
+    public ResponseEntity<?> updateRideBookingStatusToCancelled(@PathVariable("rideId") String rideId, @PathVariable("passengerId") String passengerId)
     {
         try {
             rideBookingService.updateRideBookingStatusToCancelled(rideId, passengerId);
