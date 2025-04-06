@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_USERNAME = credentials('docker_username')
         DOCKER_PASSWORD = credentials('docker_password')
-        IMAGE_VERSION = 'latest'
+        IMAGE_VERSION = '1.1.0'
     }
 
     stages {
