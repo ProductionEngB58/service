@@ -1,7 +1,9 @@
 pipeline {
     agent any
     environment {
+        DOCKER_USERNAME = credentials('docker_username')
         DOCKER_PASSWORD = credentials("docker_password")
+        IMAGE_VERSION = 'latest'
     }
 
     stages {
@@ -10,5 +12,22 @@ pipeline {
                 sh './gradlew clean build'
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $DOCKER_USERNAME/hello-img:$IMAGE_VERSION -f Dockerfile .'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                sh 'docker push $DOCKER_USERNAME/hello-img:$IMAGE_VERSION'
+            }
+        }
+    }
+
+    tools {
+        jdk 'jdk-21'
     }
 }
