@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_USERNAME = credentials('docker_username')
-        DOCKER_PASSWORD = credentials("docker_password")
+        DOCKER_PASSWORD = credentials('docker_password')
         IMAGE_VERSION = 'latest'
     }
 
