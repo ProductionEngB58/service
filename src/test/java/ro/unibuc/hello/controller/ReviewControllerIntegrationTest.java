@@ -128,8 +128,9 @@ public class ReviewControllerIntegrationTest {
         validReviewRequest.setRating(5);
         validReviewRequest.setComment("Great ride!");
 
-        Ride ride = new Ride("ride3", "startLocation", "endLocation", Instant.now(), Instant.now().plusSeconds(3600), 20, 3, "XYZ123");
+        Ride ride = new Ride("driver2", "startLocation", "endLocation", Instant.now(), Instant.now().plusSeconds(3600), 20, 3, "XYZ123");
         ride.setStatus(RideStatus.COMPLETED);
+        ride.setId("ride3");
         rideRepository.save(ride);
 
         User reviewer = new User("John", "Doe", "john@mail.com", "1234567890", Collections.singletonList(Role.PASSENGER));
