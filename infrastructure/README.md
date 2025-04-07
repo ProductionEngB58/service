@@ -9,7 +9,7 @@ docker plugin install grafana/loki-docker-driver:2.4.1 --alias loki --grant-all-
 ## Start monitoring layer
 ```
 ./start.sh
-```
+``` 
 
 ![Monitoring high level diagram](./docs/high-level-monitoring-diagram.png "Monitoring high level diagram")
 
