@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdk21' // This name must match the JDK installation name used in Jenkins Global Tool Configuration
+        jdk 'jdk-21' // This name must match the JDK installation name used in Jenkins Global Tool Configuration
     }
     environment {
         DOCKER_USERNAME = credentials('docker_username')
@@ -24,6 +24,13 @@ pipeline {
                     MAJOR_VERSION = sh([script: 'git tag | cut -d . -f 1', returnStdout: true]).trim()
                     MINOR_VERSION = sh([script: 'git tag | cut -d . -f 2', returnStdout: true]).trim()
                     PATCH_VERSION = sh([script: 'git tag | cut -d . -f 3', returnStdout: true]).trim()
+
+                    def NEW_MINOR = MINOR_VERSION.toInteger() + 1
+                    def NEW_TAG = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+
+                    sh "doccker login -u ${DOCKER_USERNAME} -P ${DOCKER_PASSWORD}"
+                    sh "docker build -t ${DOCKER_USERNAME}/hello-img:${NEW_TAG} ."
+                    sh "docker push ${DOCKER_USERNAME}/hello-img:${NEW_TAG}"
                 }
 
                 withCredentials([
@@ -32,13 +39,6 @@ pipeline {
                 ]) {
                     sh 'echo $DOCKER_USERNAME'
                 }
-
-                def NEW_MINOR = MINOR_VERSION.toInteger() + 1
-                def NEW_TAG = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
-
-                sh "doccker login -u ${DOCKER_USERNAME} -P ${DOCKER_PASSWORD}"
-                sh "docker build -t ${DOCKER_USERNAME}/hello-img:${NEW_TAG} ."
-                sh "docker push ${DOCKER_USERNAME}/hello-img:${NEW_TAG}"
             }
         }
     }
