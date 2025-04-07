@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdk-21' // This name must match the JDK installation name used in Jenkins Global Tool Configuration
+        jdk 'jdk-21' // This name must match the JDK installation name used in Jenkins Global Tool Configuration.
     }
 
     stages {
