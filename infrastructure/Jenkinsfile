@@ -5,9 +5,7 @@ pipeline {
         jdk 'jdk-21' // This name must match the JDK installation name used in Jenkins Global Tool Configuration
     }
     environment {
-        DOCKER_USERNAME = credentials('docker_username')
-        DOCKER_PASSWORD = credentials('docker_password')
-        IMAGE_VERSION = '1.1.0'
+        
     }
 
     stages {
@@ -28,16 +26,16 @@ pipeline {
                     def NEW_MINOR = MINOR_VERSION.toInteger() + 1
                     def NEW_TAG = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
 
-                    sh "doccker login -u ${DOCKER_USERNAME} -P ${DOCKER_PASSWORD}"
-                    sh "docker build -t ${DOCKER_USERNAME}/hello-img:${NEW_TAG} ."
-                    sh "docker push ${DOCKER_USERNAME}/hello-img:${NEW_TAG}"
-                }
+                    withCredentials([
+                        string(credentialsId: 'DOCKER_USERNAME', variable: 'DOCKER_USERNAME'),
+                        string(credentialsId: 'DOCKER_PASSWORD', variable: 'DOCKER_PASSWORD'),
+                    ]) {
+                        sh 'echo $DOCKER_USERNAME'
 
-                withCredentials([
-                    string(credentialsId: 'DOCKER_USERNAME', variable: 'DOCKER_USERNAME'),
-                    string(credentialsId: 'DOCKER_PASSWORD', variable: 'DOCKER_PASSWORD'),
-                ]) {
-                    sh 'echo $DOCKER_USERNAME'
+                        sh "doccker login -u ${DOCKER_USERNAME} -P ${DOCKER_PASSWORD}"
+                        sh "docker build -t ${DOCKER_USERNAME}/hello-img:${NEW_TAG} ."
+                        sh "docker push ${DOCKER_USERNAME}/hello-img:${NEW_TAG}"
+                    }
                 }
             }
         }
