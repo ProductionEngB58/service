@@ -1,5 +1,9 @@
 pipeline {
     agent any
+
+    tools {
+        jdk 'jdk21' // This name must match the JDK installation name used in Jenkins Global Tool Configuration
+    }
     environment {
         DOCKER_USERNAME = credentials('docker_username')
         DOCKER_PASSWORD = credentials('docker_password')
@@ -21,13 +25,9 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
                 sh 'docker push $DOCKER_USERNAME/hello-img:$IMAGE_VERSION'
             }
         }
-    }
-
-    tools {
-        jdk 'jdk-21'
     }
 }
