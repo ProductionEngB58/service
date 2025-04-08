@@ -108,6 +108,4 @@ public class RideController {
                 .body("Error completing ride: " + e.getMessage());
         }
     }
-
-
 }
