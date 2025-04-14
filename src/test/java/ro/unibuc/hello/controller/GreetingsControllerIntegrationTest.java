@@ -58,7 +58,7 @@ public class GreetingsControllerIntegrationTest {
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        final String MONGO_URL = "mongodb://localhost:";
+        final String MONGO_URL = "mongodb://host.docker.internal:";
         final String PORT = String.valueOf(mongoDBContainer.getMappedPort(27017));
 
         registry.add("spring.data.mongodb.uri", 
