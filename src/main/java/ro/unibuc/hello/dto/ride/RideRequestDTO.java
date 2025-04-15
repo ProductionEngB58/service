@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Getter;
 
+
 public class RideRequestDTO {
     private String driverId;
     private String startLocation;
