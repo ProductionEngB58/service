@@ -1,6 +1,6 @@
 services:
   hello:
-    image: razvanc6/hello-img:${IMAGE_TAG}
+    image: razvanc6/hello-img:${IMAGE_TAG:-latest}
     ports:
       - 8081:8081
       # Port for debug
