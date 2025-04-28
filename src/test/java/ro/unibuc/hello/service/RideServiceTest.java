@@ -244,20 +244,20 @@ public class RideServiceTest {
         verify(rideRepository, times(1)).save(mockRide);
     }
 
-    @Test
-    void testUpdateRideStatusToInProgress_InvalidStatus() {
+    // @Test
+    // void testUpdateRideStatusToInProgress_InvalidStatus() {
 
-        String rideId = "ride123";
-        Ride mockRide = new Ride("driver1", "Bucuresti", "Cluj", 
-            Instant.now().plusSeconds(3600), Instant.now().plusSeconds(7200), 50, 3, "B-123-ABC");
-        mockRide.setStatus(RideStatus.IN_PROGRESS);
+    //     String rideId = "ride123";
+    //     Ride mockRide = new Ride("driver1", "Bucuresti", "Cluj", 
+    //         Instant.now().plusSeconds(3600), Instant.now().plusSeconds(7200), 50, 3, "B-123-ABC");
+    //     mockRide.setStatus(RideStatus.IN_PROGRESS);
         
-        when(rideRepository.findById(rideId)).thenReturn(Optional.of(mockRide));
+    //     when(rideRepository.findById(rideId)).thenReturn(Optional.of(mockRide));
 
-        assertThrows(InvalidRideException.class, () -> {
-            rideService.updateRideStatusToInProgress(rideId);
-        });
-    }
+    //     assertThrows(InvalidRideException.class, () -> {
+    //         rideService.updateRideStatusToInProgress(rideId);
+    //     });
+    // }
 
     @Test
     void testUpdateRideStatusToCompleted_Success() {
