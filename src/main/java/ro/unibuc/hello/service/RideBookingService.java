@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import ro.unibuc.hello.dto.rideBooking.RideBookingRequestDTO;
 import ro.unibuc.hello.dto.rideBooking.RideBookingResponseDTO;
 import ro.unibuc.hello.model.RideBooking;
@@ -53,7 +54,8 @@ public class RideBookingService {
     private Timer rideBookingCancellationTimer;
     private MetricsConfig metricsConfig = null;
     private MeterRegistry meterRegistry;
-
+    
+    @Autowired
     public RideBookingService(
     RideBookingRepository rideBookingRepository, 
     UserRepository userRepository, 
