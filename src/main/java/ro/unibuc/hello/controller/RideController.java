@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,8 @@ import ro.unibuc.hello.service.RideService;
 @Controller
 @RequestMapping("/rides")
 public class RideController {
-    
+    private static final Logger logger = LoggerFactory.getLogger(RideController.class);
+
     private final RideService rideService;
     private final RideMetrics rideMetrics;
 
@@ -38,7 +41,11 @@ public class RideController {
     // GET /rides 
     @GetMapping
     public ResponseEntity<List<Ride>> getAllRides() {
+        logger.info("Received request to get all rides");
+
         List<Ride> rides = rideMetrics.recordGetAllRides(() -> rideService.getAllRides());
+
+        logger.info("Found {} rides", rides.size());
         return ResponseEntity.ok(rides);
     }
 
@@ -60,12 +67,17 @@ public class RideController {
         try {
             RideResponseDTO rideResponse = rideService.createRide(rideRequestDTO);
             rideMetrics.incrementCreatedRides();
+
+            logger.info("Ride created");
             return ResponseEntity.status(HttpStatus.CREATED).body(rideResponse);
         } catch (InvalidRideException e) {
+            logger.error("Invalid ride data: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RideConflictException e) {
+            logger.info("Ride conflict: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
+            logger.error("Error creating ride: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error creating ride: " + e.getMessage());
         }
@@ -77,8 +89,10 @@ public class RideController {
             rideMetrics.recordRideStartTime(() -> rideService.updateRideStatusToInProgress(rideId));
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
         } catch (InvalidRideException e) {
+            logger.error("Invalid ride data: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
+            logger.error("Error starting ride: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error starting ride: " + e.getMessage());
         }
@@ -94,8 +108,10 @@ public class RideController {
             rideMetrics.recordRideCompletion(ThreadLocalRandom.current().nextDouble(50, 501)); 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
         } catch (InvalidRideException e) {
+            logger.error("Invalid ride data: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
+            logger.error("Error completing ride: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error completing ride: " + e.getMessage());
         }
@@ -109,8 +125,10 @@ public class RideController {
             rideMetrics.decrementActiveRides();
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
         } catch (InvalidRideException e) {
+            logger.error("Invalid ride data: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
+            logger.error("Error cancelling ride: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error completing ride: " + e.getMessage());
         }
