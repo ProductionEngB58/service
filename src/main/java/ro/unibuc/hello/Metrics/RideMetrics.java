@@ -17,7 +17,7 @@ public class RideMetrics {
     private final DistributionSummary rideCompletionSummary;
     private final Timer getAllRidesTimer;
 
-    private static int activeRides = 0; // pentru Gauge
+    private static int activeRides = 0; 
 
     public RideMetrics(MeterRegistry meterRegistry) {
         this.rideCreatedCounter = Counter.builder("rides_created_total")

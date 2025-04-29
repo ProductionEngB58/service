@@ -122,13 +122,13 @@ public class RideService {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new InvalidRideException("Ride not found."));
         
-        // if (ride.getStatus() != RideStatus.SCHEDULED) {
-        //     throw new InvalidRideException("Ride status must be SCHEDULED to start the ride.");
-        // }
+        if (ride.getStatus() != RideStatus.SCHEDULED) {
+            throw new InvalidRideException("Ride status must be SCHEDULED to start the ride.");
+        }
         
-        // if (Instant.now().isBefore(ride.getDepartureTime())) {
-        //     throw new InvalidRideException("Ride cannot be started before the departure time.");
-        // }
+        if (Instant.now().isBefore(ride.getDepartureTime())) {
+            throw new InvalidRideException("Ride cannot be started before the departure time.");
+        }
         
         ride.setStatus(RideStatus.IN_PROGRESS);
         return RideResponseDTO.toDTO(rideRepository.save(ride));
