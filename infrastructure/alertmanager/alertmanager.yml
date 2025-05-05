@@ -13,7 +13,11 @@ receivers:
   email_configs:
   - to: 'EMAIL@gmail.com'
     from: 'EMAIL@gmail.com'
+    #smarthost: sandbox.smtp.mailtrap.io:587
+    #auth_username: '9bb6db167ea846'
+    #auth_identity: '9bb6db167ea846'
+    #auth_password: '365b3f23507e19'
     smarthost: sandbox.smtp.mailtrap.io:587
-    auth_username: '9bb6db167ea846'
-    auth_identity: '9bb6db167ea846'
-    auth_password: '365b3f23507e19'
+    auth_username: '97b4d133eaa691'
+    auth_identity: '97b4d133eaa691'
+    auth_password: 'f93553db5eb948'

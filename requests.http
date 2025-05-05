@@ -8,6 +8,9 @@
 # @prompt id The id to find the user
 GET http://localhost:8080/users
 
+# hey -z 2m -q 5 -c 10 http://localhost:8080/rides
+
+
 ### All users
 GET http://localhost:8080/rides
 ### Hello world endpoint: get response "Hello, Stranger!"

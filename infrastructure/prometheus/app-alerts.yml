@@ -19,6 +19,15 @@ groups:
           summary: "Ride service is unavailable"
           description: "The ride service has been reporting unhealthy (0) for more than 1 minute."
 
+      - alert: SlowGetAllRides
+        expr: histogram_quantile(0.99, rate(get_all_rides_duration_seconds_bucket[1m])) > 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Ride retrieval is slow (99th percentile > 2s)"
+          description: "getAllRides API is taking too long to respond (p99 > 2s) for more than 1 minute.\nVALUE = {{ $value }}\nLABELS = {{ $labels }}"
+
       - alert: CRITICAL-HighThroughput
         expr: rate(hello_info_count_total[1m]) > 50
         for: 10s
