@@ -43,7 +43,17 @@ public class RideController {
     public ResponseEntity<List<Ride>> getAllRides() {
         logger.info("Received request to get all rides");
 
-        List<Ride> rides = rideMetrics.recordGetAllRides(() -> rideService.getAllRides());
+        //slow
+        List<Ride> rides = rideMetrics.recordGetAllRides(() -> {
+            try {
+                Thread.sleep(3000); 
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            return rideService.getAllRides();
+        });
+
+        // List<Ride> rides = rideMetrics.recordGetAllRides(() -> rideService.getAllRides());
 
         logger.info("Found {} rides", rides.size());
         return ResponseEntity.ok(rides);

@@ -38,9 +38,12 @@ public class RideMetrics {
                 .description("Summary of ride completions")
                 .register(meterRegistry);
 
-        this.getAllRidesTimer = Timer.builder("get_all_rides_duration_seconds")
-                .description("Time taken to get all rides")
-                .register(meterRegistry);
+        this.getAllRidesTimer = Timer
+        .builder("get_all_rides_duration_seconds")
+        .description("Time taken to get all rides")
+        .publishPercentiles(0.5, 0.95, 0.99)
+        .publishPercentileHistogram()
+        .register(meterRegistry);
 
         //availability metric 
         this.rideServiceAvailabilityGauge = Gauge
