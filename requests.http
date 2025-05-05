@@ -115,7 +115,7 @@ GET http://localhost:8080/info
 @rideId = 67eb8d07354d741fa1e5c9dc
 @passengerId = 67eb8b8875af7807ab93b032
 @createdAt = 2024-04-04T17:00:00.000Z
-POST http://localhost:8081/bookings
+POST http://localhost:8080/bookings
 Content-Type: application/json
 
 {
