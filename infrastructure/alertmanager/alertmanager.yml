@@ -13,7 +13,7 @@ receivers:
   email_configs:
   - to: 'EMAIL@gmail.com'
     from: 'EMAIL@gmail.com'
-    smarthost: smtp.gmail.com:587
-    auth_username: 'EMAIL@gmail.com'
-    auth_identity: 'EMAIL@gmail.com'
-    auth_password: 'GENERATE ONE FROM https://security.google.com/settings/security/apppasswords'
+    smarthost: sandbox.smtp.mailtrap.io:587
+    auth_username: '9bb6db167ea846'
+    auth_identity: '9bb6db167ea846'
+    auth_password: '365b3f23507e19'
