@@ -1,3 +1,4 @@
+
 package ro.unibuc.hello.Metrics;
 
 import io.micrometer.core.instrument.*;
@@ -16,6 +17,7 @@ public class RideMetrics {
     private final Timer rideStartTimer;
     private final DistributionSummary rideCompletionSummary;
     private final Timer getAllRidesTimer;
+    private final Gauge rideServiceAvailabilityGauge;
 
     private static int activeRides = 0; 
 
@@ -39,6 +41,12 @@ public class RideMetrics {
         this.getAllRidesTimer = Timer.builder("get_all_rides_duration_seconds")
                 .description("Time taken to get all rides")
                 .register(meterRegistry);
+
+        //availability metric 
+        this.rideServiceAvailabilityGauge = Gauge
+        .builder("ride_service_available", this, RideMetrics::checkAvailability)
+        .description("1 if Ride service is healthy, 0 if unhealthy")
+        .register(meterRegistry);
     }
 
     public void incrementCreatedRides() {
@@ -67,9 +75,22 @@ public class RideMetrics {
 
     public List<Ride> recordGetAllRides(Supplier<List<Ride>> supplier) {
     return getAllRidesTimer.record(supplier);
-}
+    }
 
     public int getActiveRides() {
         return activeRides;
     }
+
+    //simulate failure
+    // public double checkAvailability() {
+    // return 0.0; 
+    // }
+
+    public double checkAvailability() {
+        try {
+            return getActiveRides() >= 0 ? 1.0 : 0.0;
+        } catch (Exception e) {
+            return 0.0;
+        } }
+
 }
